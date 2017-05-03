@@ -5,7 +5,7 @@
 
 #include "Object.h"
 
-/** 
+/**
  * \file
  * \brief Cylinder class header file.
  */
@@ -13,15 +13,15 @@
 
 /**
  * \brief Class for Cylinder objects.
- * 
+ *
  * This class provides an Object which is a cyclinder centred at the origin, with radius 1.
- * The clyinder is aligned with the \f$Z\f$-axis, and extends to \f$\pm 1\f$ along that axis, as 
+ * The cylinder is aligned with the \f$Z\f$-axis, and extends to \f$\pm 1\f$ along that axis, as
  * illustrated below.
  *
  * \image html cylinder.png
  * \image latex cylinder.eps
- * 
- * Note that the Cylinder provided in the skeleton code is not complete, and returns no 
+ *
+ * Note that the Cylinder provided in the skeleton code is not complete, and returns no
  * RayIntersections from intersect(). This method needs to be implemented correctly
  * as part of the assignment.
  */
@@ -30,14 +30,14 @@ class Cylinder : public Object {
 public:
 
     /** \brief Cylinder default constructor.
-	 * 
-	 * A newly constructed Cylinder is centred at the origin, and has raidius 1. 
+	 *
+	 * A newly constructed Cylinder is centred at the origin, and has radius 1.
 	 * Its axis is aligned with the Z-axis, and it extends out to \f$Z = \pm 1\f$.
 	 * It may be moved, rotated, and scaled through its transform member.
 	 */
 	Cylinder();
 
-	/** \brief Cylinder copy constructor.      
+	/** \brief Cylinder copy constructor.
 	 * \param cylinder The Cylinder to copy.
 	 */
 	Cylinder(const Cylinder& cylinder);
@@ -54,7 +54,7 @@ public:
 
 	/** \brief Cylinder-Ray intersection computation.
 	 *
-	 * \todo The Cylinder-Ray intersection needs to be implemented as part of the assignment. 
+	 * \todo The Cylinder-Ray intersection needs to be implemented as part of the assignment.
 	 *
 	 * The intersection of a Cylinder and a Ray can be divided into three main parts:
 	 * - Intersections with the curved surface of the cylinder
@@ -63,8 +63,8 @@ public:
 	 *
 	 * Intersections with the curved surface are like the intersection with a Sphere, but
 	 * the \f$Z\f$-axis can be ignored. You might think of this as intersecting a 2D ray in the
-	 * \f$X\f$-\f$Y\f$ plane with a unit circle. This leads to a quadratic equation, like that 
-	 * for the Sphere and 0, 1, or 2 hit points. These hit points would be with an 'infinite' 
+	 * \f$X\f$-\f$Y\f$ plane with a unit circle. This leads to a quadratic equation, like that
+	 * for the Sphere and 0, 1, or 2 hit points. These hit points would be with an 'infinite'
 	 * cylinder extending along the \f$Z\f$-axis, so you should reject those with \f$Z\f$ value
 	 * greater than 1 or less than \f$-1\f$.
 	 *

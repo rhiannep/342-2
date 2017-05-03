@@ -1,0 +1,25 @@
+Scene
+    ambientLight 0.2 0.2 0.2
+    backgroundColour 0.75 1.0 1.0
+    renderSize 400 300
+End
+
+Object Cylinder
+    Colour 1 1 1
+End
+
+camera pinholecamera 1
+    translate 0 -3 -100 # Move camera back and up
+    rotate X -10 # look down a bit
+    translate 0 1 0
+end
+
+light pointlight
+    location 20 -4 -120
+    colour 100 100 100
+end
+
+light pointlight
+    location 0 -10 -10
+    colour 50 50 50
+end

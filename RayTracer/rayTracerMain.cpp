@@ -24,14 +24,14 @@
  *
  * The scene is then rendered and saved to file, as long as there
  * is a Camera specified.
- * 
+ *
  */
 int main (int argc, char *argv[]) {
 
 	Scene scene;
-	
+
 	SceneReader reader(&scene);
-	
+
 	for (int i = 1; i < argc; ++i) {
 		reader.read(argv[i]);
 	}

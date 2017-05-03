@@ -93,6 +93,3 @@ light pointlight
     location 0 -10 -10
     colour 50 50 50
 end
-
-
-
