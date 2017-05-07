@@ -14,7 +14,7 @@ Scene::~Scene() {
 
 void Scene::render() const {
 	Display display("Render", renderWidth, renderHeight, Colour(128,128,128));
-	
+
 	std::cout << "Rendering a scene with " << objects_.size() << " objects" << std::endl;
 
 	double halfPixel = 2.0/(2*renderWidth);
@@ -34,7 +34,7 @@ void Scene::render() const {
 
 RayIntersection Scene::intersect(const Ray& ray) const {
 	RayIntersection firstHit;
-	firstHit.distance = infinity;	
+	firstHit.distance = infinity;
 	for (auto& obj : objects_) {
 		std::vector<RayIntersection> hits = obj->intersect(ray);
 		for (auto& hit : hits) {
@@ -50,19 +50,44 @@ RayIntersection Scene::intersect(const Ray& ray) const {
 }
 
 Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
+	if(rayDepth == 0) return backgroundColour;
+
 	RayIntersection hitPoint = intersect(viewRay);
 	if (hitPoint.distance == infinity) {
 		return backgroundColour;
 	}
 
 	Colour hitColour = ambientLight * hitPoint.material.ambientColour;
-		
+
 	// Code to do better lighting, shadows, and reflections goes here.
     for (auto light: lights_) {
-        // Compute the influence of this light on the appearance of the hit object.
+			Vector l = light->location - hitPoint.point;
+			l = l / l.norm();
+			Vector n = hitPoint.normal / hitPoint.normal.norm();
+
+			double nl = n.dot(l);
+
+			Colour diffuseComp = hitPoint.material.diffuseColour * nl;
+
+			Vector v = hitPoint.point - viewRay.point;
+			v = v / v.norm();
+
+			Vector r = l - 2 * l.dot(n) * n;
+			r = r / r.norm();
+			double rpn = std::pow(r.dot(v), hitPoint.material.specularExponent);
+			Colour specularComp = hitPoint.material.specularColour * rpn;
+
+			hitColour += light->getIntensityAt(hitPoint.point) * (diffuseComp + specularComp);
     }
-    
-	return hitColour;
+
+		Ray reflectedRay;
+		reflectedRay.point = hitPoint.point;
+		reflectedRay.direction = light->location - hitPoint.point;
+
+		computeColour(reflectedRay, rayDepth - 1);
+
+		hitColour.clip();
+	  return hitColour;
 }
 
 bool Scene::hasCamera() const {

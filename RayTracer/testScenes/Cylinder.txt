@@ -4,22 +4,37 @@ Scene
     renderSize 400 300
 End
 
+Material ShinyRed
+    Colour 0.8 0 0
+    Specular 0.7 0.4 0.4 3
+end
+
 Object Cylinder
-    Colour 1 1 1
+Material ShinyRed
+End
+
+Object Cylinder
+Material ShinyRed
+translate 2 0 0
 End
 
 camera pinholecamera 1
-    translate 0 -3 -100 # Move camera back and up
+    translate 0 -1 -4 # Move camera back and up
     rotate X -10 # look down a bit
     translate 0 1 0
 end
 
 light pointlight
-    location 20 -4 -120
+    location -2 -1 -1
     colour 100 100 100
 end
 
 light pointlight
-    location 0 -10 -10
-    colour 50 50 50
+    location -2 -1 -1
+    colour 100 100 100
+end
+
+light pointlight
+    location -2 -1 -1
+    colour 100 100 100
 end

@@ -25,12 +25,13 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 	std::vector<RayIntersection> result;
 
 	Ray inverseRay = transform.applyInverse(ray);
-	Point inverseRayPXY = Point(inverseRay.point(0), inverseRay.point(0), 0);
-	Direction inverseRayDXY = Direction(inverseRay.direction(0), inverseRay.direction(0), 0);
+	Ray rayXY = inverseRay;
+	// inverseRay.direction(2) = 0;
+	// inverseRay.point(2) = 0;
 
-	double a = inverseRayDXY.squaredNorm();
-	double b = 2*inverseRayDXY.dot(inverseRayPXY);
-	double c = inverseRayPXY.squaredNorm() - 1;
+	double a = inverseRay.direction.squaredNorm();
+	double b = 2*inverseRay.direction.dot(inverseRay.point);
+	double c = inverseRay.point.squaredNorm() - 1;
 
 	RayIntersection hit;
 	hit.material = material;
@@ -75,6 +76,6 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 		exit(-1);
 		break;
 	}
-	
+
 	return result;
 }
