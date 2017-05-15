@@ -50,7 +50,7 @@ RayIntersection Scene::intersect(const Ray& ray) const {
 }
 
 Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
-	if(rayDepth == 0) return backgroundColour;
+	if(rayDepth == 0) return Colour(0, 0, 0);
 
 	RayIntersection hitPoint = intersect(viewRay);
 	if (hitPoint.distance == infinity) {
@@ -65,12 +65,14 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 			Ray shadowRay;
 			shadowRay.point = hitPoint.point;
 			shadowRay.direction = light->location - hitPoint.point;
+			if(intersect(shadowRay).distance > 0 && intersect(shadowRay).distance < 1) {
+				intensity = 0;
+			}
 
 			/* Calculate diffuse component. */
 			Vector l = light->location - hitPoint.point;
-			if(intersect(shadowRay).distance < l.norm()) intensity = 0;
+		    l = l / l.norm();
 
-			l = l / l.norm();
 			Vector n = hitPoint.normal / hitPoint.normal.norm();
 
 			double nl = n.dot(l);
@@ -78,16 +80,14 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 			Colour diffuseComp = hitPoint.material.diffuseColour * light->colour * nl;
 
       /* Calculate specular component. */
-			Vector v = hitPoint.point - viewRay.point;
+			Vector v = viewRay.point - hitPoint.point;
 			v = v / v.norm();
 
-			Vector r = l - 2 * l.dot(n) * n;
+			Vector r = 2 * n * l.dot(n) - l;
 			r = r / r.norm();
 			double rpn = std::pow(r.dot(v), hitPoint.material.specularExponent);
+
 			Colour specularComp = hitPoint.material.specularColour * light->colour * rpn;
-
-
-
 
 			materialComp = intensity * (diffuseComp + specularComp);
 			Colour fullLight = Colour(1, 1, 1);

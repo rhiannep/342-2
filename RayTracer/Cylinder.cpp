@@ -85,7 +85,7 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 			hit.point = transform.apply(potentialPoint);
 			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
 			normal /= normal.norm();
-			hit.normal = transform.apply(Normal(inverseRay.point + d*rayXY.direction));
+			hit.normal = transform.apply(normal);
 			if (hit.normal.dot(ray.direction) > 0) {
 				hit.normal = -hit.normal;
 			}
@@ -102,7 +102,7 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 			hit.point = transform.apply(potentialPoint);
 			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
 			normal /= normal.norm();
-			hit.normal = transform.apply(Normal(inverseRay.point + d*rayXY.direction));
+			hit.normal = transform.apply(normal);
 			if (hit.normal.dot(ray.direction) > 0) {
 				hit.normal = -hit.normal;
 			}
@@ -117,7 +117,7 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 			hit.point = transform.apply(potentialPoint);
 			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
 			normal /= normal.norm();
-			hit.normal = transform.apply(Normal(inverseRay.point + d*rayXY.direction));
+			hit.normal = transform.apply(normal);
 			if (hit.normal.dot(ray.direction) > 0) {
 				hit.normal = -hit.normal;
 			}
