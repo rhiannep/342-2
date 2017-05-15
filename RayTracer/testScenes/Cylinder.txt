@@ -5,36 +5,27 @@ Scene
 End
 
 Material ShinyRed
-    Colour 0.8 0 0
-    Specular 0.7 0.4 0.4 3
+    Colour 0.7 0 0
+    Mirror 0.25 0.25 0.25
 end
 
 Object Cylinder
-Material ShinyRed
+    Material shinyred
+    rotate y 30
 End
 
-Object Cylinder
-Material ShinyRed
-translate 2 0 0
+
+Object Sphere
+Material shinyred
+    scale3 5 0.1 5
+    translate 0 2 0
 End
 
 camera pinholecamera 1
-    translate 0 -1 -4 # Move camera back and up
-    rotate X -10 # look down a bit
-    translate 0 1 0
+    translate 0 0 -5
 end
 
 light pointlight
-    location -2 -1 -1
-    colour 100 100 100
-end
-
-light pointlight
-    location -2 -1 -1
-    colour 100 100 100
-end
-
-light pointlight
-    location -2 -1 -1
-    colour 100 100 100
+    location 3 -5 -5
+    colour 60 60 60
 end

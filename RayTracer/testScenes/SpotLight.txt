@@ -1,0 +1,26 @@
+Scene
+    ambientLight 0.2 0.2 0.2
+    backgroundColour 0.75 1.0 1.0
+    renderSize 400 300
+End
+
+Material ShinyRed
+    Colour 0.7 0 0
+end
+
+
+Object Cylinder
+Material ShinyRed
+    translate 0 0 0
+    scale3 1 1 2
+End
+
+camera pinholecamera 1
+    translate 0 -3 -10
+    rotate x -40
+end
+
+light spotlight 0 1 0 2
+    location 0 -2 0
+    colour 60 60 60
+end

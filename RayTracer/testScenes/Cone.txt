@@ -1,0 +1,29 @@
+Scene
+    ambientLight 0.2 0.2 0.2
+    backgroundColour 0.75 1.0 1.0
+    renderSize 400 300
+End
+
+Material ShinyRed
+    Colour 0.7 0 0
+    Specular 0.7 0.7 0.7 2
+end
+
+Object Cone
+    rotate x 275
+    Material shinyred
+End
+
+Object Sphere
+Material ShinyRed
+    translate 4 0 0
+End
+
+camera pinholecamera 1
+    translate 0 0 -5
+end
+
+light pointlight
+    location 0 -7 -5 # back and up
+    colour 80 20 20
+end

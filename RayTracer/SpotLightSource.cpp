@@ -2,7 +2,7 @@
 
 #include "utility.h"
 
-SpotLightSource::SpotLightSource() : 
+SpotLightSource::SpotLightSource() :
 LightSource(), direction(0,0,1), angle(45) {
 
 }
@@ -30,8 +30,9 @@ const SpotLightSource& SpotLightSource::operator=(const SpotLightSource& lightSo
 }
 
 double SpotLightSource::getIntensityAt(const Point& point) const {
-  
-  // Code to compute intensity of the spot light at a point goes here.
-
-  return 0;
+	Vector l = location - point;
+	double distance = l.norm();
+	if (distance < epsilon) distance = epsilon;
+	double intensity = 1 / (distance*distance);
+	return l.dot(direction) < cos(angle) ? intensity : 1;
 }

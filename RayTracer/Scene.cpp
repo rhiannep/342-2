@@ -58,33 +58,46 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 	}
 
 	Colour hitColour = ambientLight * hitPoint.material.ambientColour;
-
-	// Code to do better lighting, shadows, and reflections goes here.
     for (auto light: lights_) {
+		    double intensity = light->getIntensityAt(hitPoint.point);
+			Colour materialComp;
+
+			Ray shadowRay;
+			shadowRay.point = hitPoint.point;
+			shadowRay.direction = light->location - hitPoint.point;
+
+			/* Calculate diffuse component. */
 			Vector l = light->location - hitPoint.point;
+			if(intersect(shadowRay).distance < l.norm()) intensity = 0;
+
 			l = l / l.norm();
 			Vector n = hitPoint.normal / hitPoint.normal.norm();
 
 			double nl = n.dot(l);
 
-			Colour diffuseComp = hitPoint.material.diffuseColour * nl;
+			Colour diffuseComp = hitPoint.material.diffuseColour * light->colour * nl;
 
+      /* Calculate specular component. */
 			Vector v = hitPoint.point - viewRay.point;
 			v = v / v.norm();
 
 			Vector r = l - 2 * l.dot(n) * n;
 			r = r / r.norm();
 			double rpn = std::pow(r.dot(v), hitPoint.material.specularExponent);
-			Colour specularComp = hitPoint.material.specularColour * rpn;
+			Colour specularComp = hitPoint.material.specularColour * light->colour * rpn;
 
-			hitColour += light->getIntensityAt(hitPoint.point) * (diffuseComp + specularComp);
+
+
+
+			materialComp = intensity * (diffuseComp + specularComp);
+			Colour fullLight = Colour(1, 1, 1);
+
+			Ray reflectedRay;
+			reflectedRay.point = hitPoint.point;
+			reflectedRay.direction = 2 * n * v.dot(n) - v;
+			Colour reflectedComp = computeColour(reflectedRay, rayDepth - 1);
+			hitColour += reflectedComp * hitPoint.material.mirrorColour + (fullLight - hitPoint.material.mirrorColour) * materialComp;
     }
-
-		Ray reflectedRay;
-		reflectedRay.point = hitPoint.point;
-		reflectedRay.direction = light->location - hitPoint.point;
-
-		computeColour(reflectedRay, rayDepth - 1);
 
 		hitColour.clip();
 	  return hitColour;

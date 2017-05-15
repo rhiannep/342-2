@@ -26,15 +26,49 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 
 	Ray inverseRay = transform.applyInverse(ray);
 	Ray rayXY = inverseRay;
-	// inverseRay.direction(2) = 0;
-	// inverseRay.point(2) = 0;
+	rayXY.direction(2) = 0;
+	rayXY.point(2) = 0;
 
-	double a = inverseRay.direction.squaredNorm();
-	double b = 2*inverseRay.direction.dot(inverseRay.point);
-	double c = inverseRay.point.squaredNorm() - 1;
+	/* Cap 1. */
+	double distanceToCap = (1 - inverseRay.point(2)) / inverseRay.direction(2);
+	if(distanceToCap > 0) {
+	if((Point(inverseRay.point + distanceToCap * inverseRay.direction) - Point(0, 0, 1)).norm() < 1) {
+		RayIntersection hit;
+		hit.material = material;
+		hit.point = transform.apply(Point(inverseRay.point + distanceToCap * inverseRay.direction));
+		hit.normal = transform.apply(Normal(0, 0, 1));
+		if (hit.normal.dot(ray.direction) > 0) {
+			hit.normal = -hit.normal;
+		}
+		  hit.distance = (hit.point - ray.point).norm() * sign(distanceToCap);
+		  result.push_back(hit);
+	  }
+  }
+
+	/* Cap 2. */
+  distanceToCap = (-1 - inverseRay.point(2)) / inverseRay.direction(2);
+	if(distanceToCap > 0) {
+    if((Point(inverseRay.point + distanceToCap * inverseRay.direction) - Point(0, 0, -1)).norm() < 1) {
+	    RayIntersection hit;
+	    hit.material = material;
+	    hit.point = transform.apply(Point(inverseRay.point + distanceToCap * inverseRay.direction));
+	    hit.normal = transform.apply(Normal(0, 0, -1));
+	    if(hit.normal.dot(ray.direction) > 0) {
+		    hit.normal = -hit.normal;
+	    }
+	  hit.distance = (hit.point - ray.point).norm() * sign(distanceToCap);
+	  result.push_back(hit);
+    }
+  }
+
+	/* Barrel part. */
+	double a = rayXY.direction.squaredNorm();
+	double b = 2*rayXY.direction.dot(rayXY.point);
+	double c = rayXY.point.squaredNorm() - 1;
 
 	RayIntersection hit;
 	hit.material = material;
+	Point potentialPoint;
 
 	double b2_4ac = b*b - 4*a*c;
 	double d;
@@ -45,10 +79,13 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 	case 0:
 		// One intersection
 		d = -b/(2*a);
-		if (d > 0) {
+		potentialPoint = Point(inverseRay.point + d*inverseRay.direction);
+		if (d > 0 && potentialPoint(2) < 1 && potentialPoint(2) > -1) {
 			// Intersection is in front of the ray's start point
-			hit.point = transform.apply(Point(inverseRay.point + d*inverseRay.direction));
-			hit.normal = transform.apply(Normal(inverseRay.point + d*inverseRay.direction));
+			hit.point = transform.apply(potentialPoint);
+			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
+			normal /= normal.norm();
+			hit.normal = transform.apply(Normal(inverseRay.point + d*rayXY.direction));
 			if (hit.normal.dot(ray.direction) > 0) {
 				hit.normal = -hit.normal;
 			}
@@ -59,16 +96,35 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 	case 1:
 		// Two intersections
 		d = (-b + sqrt(b*b - 4*a*c))/(2*a);
-		if (d > 0) {
+		potentialPoint = Point(inverseRay.point + d*inverseRay.direction);
+		if (d > 0 && potentialPoint(2) < 1 && potentialPoint(2) > -1) {
 			// Intersection is in front of the ray's start point
-			hit.point = transform.apply(Point(inverseRay.point + d*inverseRay.direction));
-			hit.normal = transform.apply(Normal(inverseRay.point + d*inverseRay.direction));
+			hit.point = transform.apply(potentialPoint);
+			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
+			normal /= normal.norm();
+			hit.normal = transform.apply(Normal(inverseRay.point + d*rayXY.direction));
 			if (hit.normal.dot(ray.direction) > 0) {
 				hit.normal = -hit.normal;
 			}
 			hit.distance = (hit.point - ray.point).norm() * sign(d);
 			result.push_back(hit);
 		}
+
+		d = (-b - sqrt(b*b - 4*a*c))/(2*a);
+		potentialPoint = Point(inverseRay.point + d*inverseRay.direction);
+		if (d > 0 && potentialPoint(2) < 1 && potentialPoint(2) > -1) {
+			// Intersection is in front of the ray's start point
+			hit.point = transform.apply(potentialPoint);
+			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
+			normal /= normal.norm();
+			hit.normal = transform.apply(Normal(inverseRay.point + d*rayXY.direction));
+			if (hit.normal.dot(ray.direction) > 0) {
+				hit.normal = -hit.normal;
+			}
+			hit.distance = (hit.point - ray.point).norm() * sign(d);
+			result.push_back(hit);
+		}
+
 		break;
 	default:
 		// Shouldn't be possible, but just in case
