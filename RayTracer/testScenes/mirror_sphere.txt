@@ -3,6 +3,7 @@ Scene
     backgroundColour 0.3 0.3 0.3
     renderSize 400 300
     RayDepth 2
+    filename balls.png
 End
 
 Material grey

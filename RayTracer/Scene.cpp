@@ -94,14 +94,14 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 			reflectedRay.direction = 2 * n * v.dot(n) - v;
 			reflectedRay.direction /= reflectedRay.direction.norm();
 			Colour reflectedColour = computeColour(reflectedRay, rayDepth - 1);
-			hitColour += reflectedColour * hitPoint.material.mirrorColour
-			hitColour += fullLight - hitPoint.material.mirrorColour * materialColour;
+			hitColour += reflectedColour * hitPoint.material.mirrorColour;
+			hitColour += (fullLight - hitPoint.material.mirrorColour) * materialColour;
 		}
 
 		hitColour.clip();
 	    return hitColour;
 }
 
-bool Scene::hasCamera() const {
-	return bool(camera_);
-}
+	bool Scene::hasCamera() const {
+		return bool(camera_);
+	}
