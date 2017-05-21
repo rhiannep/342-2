@@ -44,7 +44,7 @@ RayIntersection Scene::intersect(const Ray& ray) const {
 		}
 	}
 	for (auto& obj: objects_) {
-	  auto hits = obj->intersect(ray);
+		auto hits = obj->intersect(ray);
 	}
 	return firstHit;
 }
@@ -59,49 +59,52 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 	}
 
 	Colour hitColour = ambientLight * hitPoint.material.ambientColour;
-    for (auto light: lights_) {
-		    double intensity = light->getIntensityAt(hitPoint.point);
-			/* Check if there is something in between the hitpoint and the light source. */
-			Ray shadowRay;
-			shadowRay.point = hitPoint.point;
-			shadowRay.direction = light->location - hitPoint.point;
-			if(intersect(shadowRay).distance > 0 && intersect(shadowRay).distance < 1) {
-				intensity = 0;
-			}
+	for (auto light: lights_) {
+		double intensity = light->getIntensityAt(hitPoint.point);
 
-			/* Calculate diffuse component. */
-			Vector l = light->location - hitPoint.point;
-		    l /= l.norm();
-			Vector n = hitPoint.normal / hitPoint.normal.norm();
-			double nl = n.dot(l);
-			Colour diffuseColour = hitPoint.material.diffuseColour * light->colour * nl;
-
-            /* Calculate specular component. */
-			Vector v = -viewRay.direction;
-			v /= v.norm();
-			Vector r = (2 * n * l.dot(n)) - l;
-			r /= r.norm();
-			double rDotVToTheN = std::pow(r.dot(v), hitPoint.material.specularExponent);
-			Colour specularColour = hitPoint.material.specularColour * light->colour * rDotVToTheN;
-
-			Colour materialColour = intensity * (diffuseColour + specularColour);
-			materialColour.clip();
-
-			/* Reflection */
-			Colour fullLight = Colour(1, 1, 1);
-			Ray reflectedRay;
-			reflectedRay.point = hitPoint.point;
-			reflectedRay.direction = 2 * n * v.dot(n) - v;
-			reflectedRay.direction /= reflectedRay.direction.norm();
-			Colour reflectedColour = computeColour(reflectedRay, rayDepth - 1);
-			hitColour += reflectedColour * hitPoint.material.mirrorColour;
-			hitColour += (fullLight - hitPoint.material.mirrorColour) * materialColour;
+		/* Check if there is something in between the hitpoint and the light source. */
+		Ray shadowRay;
+		shadowRay.point = hitPoint.point;
+		shadowRay.direction = light->location - hitPoint.point;
+		shadowRay.direction /= shadowRay.direction.norm();
+		if(intersect(shadowRay).distance > 0 && intersect(shadowRay).distance < 1) {
+			intensity = 0;
 		}
 
-		hitColour.clip();
-	    return hitColour;
+		/* Calculate diffuse component. */
+		Vector l = light->location - hitPoint.point;
+		l /= l.norm();
+		Vector n = hitPoint.normal / hitPoint.normal.norm();
+		double nl = n.dot(l);
+		Colour diffuseColour = hitPoint.material.diffuseColour * nl;
+
+		/* Calculate specular component. */
+		Vector v = -viewRay.direction;
+		v /= v.norm();
+		Vector r = (2 * n * l.dot(n)) - l;
+		r /= r.norm();
+		double rDotVToTheN = std::pow(r.dot(v), hitPoint.material.specularExponent);
+		Colour specularColour = hitPoint.material.specularColour * rDotVToTheN;
+
+		/* Sum specular and diffuse, assume same intensity. */
+		Colour materialColour = intensity * light->colour * (diffuseColour + specularColour);
+		// materialColour.clip();
+
+		/* Reflection */
+		Colour white = Colour(1, 1, 1);
+		Ray reflectedRay;
+		reflectedRay.point = hitPoint.point;
+		reflectedRay.direction = 2 * n * v.dot(n) - v;
+		reflectedRay.direction /= reflectedRay.direction.norm();
+		Colour reflectedColour = computeColour(reflectedRay, rayDepth - 1);
+		hitColour += hitPoint.material.mirrorColour * reflectedColour;
+		hitColour += (white - hitPoint.material.mirrorColour) * materialColour;
+	}
+
+	hitColour.clip();
+	return hitColour;
 }
 
-	bool Scene::hasCamera() const {
-		return bool(camera_);
-	}
+bool Scene::hasCamera() const {
+	return bool(camera_);
+}

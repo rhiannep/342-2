@@ -69,7 +69,7 @@ std::vector<RayIntersection> Sphere::intersect(const Ray& ray) const {
 			hit.distance = (hit.point - ray.point).norm() * sign(d);
 			result.push_back(hit);
 		}
-	
+
 		d = (-b - sqrt(b*b - 4*a*c))/(2*a);
 		if (d > 0) {
 			// Intersection is in front of the ray's start point
@@ -80,7 +80,7 @@ std::vector<RayIntersection> Sphere::intersect(const Ray& ray) const {
 			}
 			hit.distance = (hit.point - ray.point).norm() * sign(d);
 			result.push_back(hit);
-		}		
+		}
 		break;
 	default:
 		// Shouldn't be possible, but just in case
