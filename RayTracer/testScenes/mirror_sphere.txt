@@ -1,14 +1,9 @@
 Scene
-    ambientLight 0.2 0.2 0.2
-    backgroundColour 0.75 1.0 1.0
+    ambientLight 0.3 0.3 0.3
+    backgroundColour 0.3 0.3 0.3
     renderSize 400 300
     RayDepth 2
 End
-
-Material ShinyRed
-    Colour 0.7 0 0
-    specular 0.8 0.8 0.8 5
-end
 
 Material grey
     Colour 0.2 0.2 0.2
@@ -23,8 +18,21 @@ Object Cylinder
 End
 
 Object Sphere
-Material ShinyRed
-translate 0 -2 -5
+    colour 0.7 0 0
+    diffuse 0.7 0 0
+    translate -2.5 -2 -5
+End
+
+Object Sphere
+    colour 0 0.7 0
+    specular 0.7 0.7 0.7 5
+    translate 0 -2 -5
+End
+
+Object Sphere
+    colour 0 0 0.7
+    mirror 0.3 0.3 0.3
+    translate 2.5 -2 -5
 End
 
 camera pinholecamera 1
@@ -32,6 +40,11 @@ camera pinholecamera 1
 end
 
 light pointlight
-    location 0 -10 -7 # back and up
-    colour 60 60 60
+    location 7 -10 -7 # back and up
+    colour 40 40 40
+end
+
+light pointlight
+    location -7 -10 -7 # back and up
+    colour 40 40 40
 end

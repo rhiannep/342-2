@@ -34,5 +34,5 @@ double SpotLightSource::getIntensityAt(const Point& point) const {
 	double distance = l.norm();
 	if (distance < epsilon) distance = epsilon;
 	double intensity = 1 / (distance*distance);
-	return l.dot(direction) < cos(angle) ? intensity : 1;
+	return l.dot(direction) < cos(angle) ? intensity : 0;
 }

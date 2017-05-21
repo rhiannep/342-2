@@ -25,15 +25,17 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 	std::vector<RayIntersection> result;
 
 	Ray inverseRay = transform.applyInverse(ray);
-	Ray rayXY = inverseRay;
+
+	Ray rayXY = inverseRay; // Ray in the X Y plane, z component is 0.
 	rayXY.direction(2) = 0;
 	rayXY.point(2) = 0;
+
+	RayIntersection hit;
 
 	/* Cap 1. */
 	double distanceToCap = (1 - inverseRay.point(2)) / inverseRay.direction(2);
 	if(distanceToCap > 0) {
 	if((Point(inverseRay.point + distanceToCap * inverseRay.direction) - Point(0, 0, 1)).norm() < 1) {
-		RayIntersection hit;
 		hit.material = material;
 		hit.point = transform.apply(Point(inverseRay.point + distanceToCap * inverseRay.direction));
 		hit.normal = transform.apply(Normal(0, 0, 1));
@@ -49,7 +51,6 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
   distanceToCap = (-1 - inverseRay.point(2)) / inverseRay.direction(2);
 	if(distanceToCap > 0) {
     if((Point(inverseRay.point + distanceToCap * inverseRay.direction) - Point(0, 0, -1)).norm() < 1) {
-	    RayIntersection hit;
 	    hit.material = material;
 	    hit.point = transform.apply(Point(inverseRay.point + distanceToCap * inverseRay.direction));
 	    hit.normal = transform.apply(Normal(0, 0, -1));
@@ -66,7 +67,6 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 	double b = 2*rayXY.direction.dot(rayXY.point);
 	double c = rayXY.point.squaredNorm() - 1;
 
-	RayIntersection hit;
 	hit.material = material;
 	Point potentialPoint;
 
@@ -81,14 +81,16 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 		d = -b/(2*a);
 		potentialPoint = Point(inverseRay.point + d*inverseRay.direction);
 		if (d > 0 && potentialPoint(2) < 1 && potentialPoint(2) > -1) {
-			// Intersection is in front of the ray's start point
+			// Check the potential hit is in the range we want
 			hit.point = transform.apply(potentialPoint);
-			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
+
+			Normal normal = Normal(potentialPoint - Point(0, 0, potentialPoint(2)));
 			normal /= normal.norm();
 			hit.normal = transform.apply(normal);
 			if (hit.normal.dot(ray.direction) > 0) {
 				hit.normal = -hit.normal;
 			}
+
 			hit.distance = (hit.point - ray.point).norm() * sign(d);
 			result.push_back(hit);
 		}
@@ -98,14 +100,16 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 		d = (-b + sqrt(b*b - 4*a*c))/(2*a);
 		potentialPoint = Point(inverseRay.point + d*inverseRay.direction);
 		if (d > 0 && potentialPoint(2) < 1 && potentialPoint(2) > -1) {
-			// Intersection is in front of the ray's start point
+			// Check the potential hit is in the range we want
 			hit.point = transform.apply(potentialPoint);
-			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
+
+			Normal normal = Normal(potentialPoint - Point(0, 0, potentialPoint(2)));
 			normal /= normal.norm();
 			hit.normal = transform.apply(normal);
 			if (hit.normal.dot(ray.direction) > 0) {
 				hit.normal = -hit.normal;
 			}
+
 			hit.distance = (hit.point - ray.point).norm() * sign(d);
 			result.push_back(hit);
 		}
@@ -115,12 +119,14 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 		if (d > 0 && potentialPoint(2) < 1 && potentialPoint(2) > -1) {
 			// Intersection is in front of the ray's start point
 			hit.point = transform.apply(potentialPoint);
-			Normal normal = Normal(inverseRay.point + d*rayXY.direction);
+
+			Normal normal = Normal(potentialPoint - Point(0, 0, potentialPoint(2)));
 			normal /= normal.norm();
 			hit.normal = transform.apply(normal);
 			if (hit.normal.dot(ray.direction) > 0) {
 				hit.normal = -hit.normal;
 			}
+
 			hit.distance = (hit.point - ray.point).norm() * sign(d);
 			result.push_back(hit);
 		}
@@ -132,6 +138,5 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 		exit(-1);
 		break;
 	}
-
 	return result;
 }

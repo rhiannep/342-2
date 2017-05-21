@@ -6,7 +6,7 @@ End
 
 Material ShinyRed
     Colour 0.7 0 0
-    Specular 0.7 0.7 0.7 2
+    specular 0.8 0.8 0.8 3
 end
 
 Object Cone

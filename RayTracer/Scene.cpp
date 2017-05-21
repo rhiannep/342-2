@@ -50,6 +50,7 @@ RayIntersection Scene::intersect(const Ray& ray) const {
 }
 
 Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
+	/* Base case for reflection. */
 	if(rayDepth == 0) return Colour(0, 0, 0);
 
 	RayIntersection hitPoint = intersect(viewRay);
@@ -60,8 +61,7 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 	Colour hitColour = ambientLight * hitPoint.material.ambientColour;
     for (auto light: lights_) {
 		    double intensity = light->getIntensityAt(hitPoint.point);
-			Colour materialComp;
-
+			/* Check if there is something in between the hitpoint and the light source. */
 			Ray shadowRay;
 			shadowRay.point = hitPoint.point;
 			shadowRay.direction = light->location - hitPoint.point;
@@ -71,36 +71,35 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 
 			/* Calculate diffuse component. */
 			Vector l = light->location - hitPoint.point;
-		    l = l / l.norm();
-
+		    l /= l.norm();
 			Vector n = hitPoint.normal / hitPoint.normal.norm();
-
 			double nl = n.dot(l);
+			Colour diffuseColour = hitPoint.material.diffuseColour * light->colour * nl;
 
-			Colour diffuseComp = hitPoint.material.diffuseColour * light->colour * nl;
+            /* Calculate specular component. */
+			Vector v = -viewRay.direction;
+			v /= v.norm();
+			Vector r = (2 * n * l.dot(n)) - l;
+			r /= r.norm();
+			double rDotVToTheN = std::pow(r.dot(v), hitPoint.material.specularExponent);
+			Colour specularColour = hitPoint.material.specularColour * light->colour * rDotVToTheN;
 
-      /* Calculate specular component. */
-			Vector v = viewRay.point - hitPoint.point;
-			v = v / v.norm();
+			Colour materialColour = intensity * (diffuseColour + specularColour);
+			materialColour.clip();
 
-			Vector r = 2 * n * l.dot(n) - l;
-			r = r / r.norm();
-			double rpn = std::pow(r.dot(v), hitPoint.material.specularExponent);
-
-			Colour specularComp = hitPoint.material.specularColour * light->colour * rpn;
-
-			materialComp = intensity * (diffuseComp + specularComp);
+			/* Reflection */
 			Colour fullLight = Colour(1, 1, 1);
-
 			Ray reflectedRay;
 			reflectedRay.point = hitPoint.point;
 			reflectedRay.direction = 2 * n * v.dot(n) - v;
-			Colour reflectedComp = computeColour(reflectedRay, rayDepth - 1);
-			hitColour += reflectedComp * hitPoint.material.mirrorColour + (fullLight - hitPoint.material.mirrorColour) * materialComp;
-    }
+			reflectedRay.direction /= reflectedRay.direction.norm();
+			Colour reflectedColour = computeColour(reflectedRay, rayDepth - 1);
+			hitColour += reflectedColour * hitPoint.material.mirrorColour
+			hitColour += fullLight - hitPoint.material.mirrorColour * materialColour;
+		}
 
 		hitColour.clip();
-	  return hitColour;
+	    return hitColour;
 }
 
 bool Scene::hasCamera() const {

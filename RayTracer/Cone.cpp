@@ -28,11 +28,12 @@ std::vector<RayIntersection> Cone::intersect(const Ray& ray) const {
 	Ray inverseRay = transform.applyInverse(ray);
 	Ray rayXY = inverseRay;
 
+	RayIntersection hit;
+
 	/* base of cone. */
 	double distanceToCap = (1 - inverseRay.point(2)) / inverseRay.direction(2);
 	if(distanceToCap > 0) {
 	if((Point(inverseRay.point + distanceToCap * inverseRay.direction) - Point(0, 0, 1)).norm() < 1) {
-		RayIntersection hit;
 		hit.material = material;
 		hit.point = transform.apply(Point(inverseRay.point + distanceToCap * inverseRay.direction));
 		hit.normal = transform.apply(Normal(0, 0, 1));
@@ -49,7 +50,6 @@ std::vector<RayIntersection> Cone::intersect(const Ray& ray) const {
 	double b = 2*inverseRay.direction.dot(inverseRay.point)-4*inverseRay.point(2)*inverseRay.direction(2);
 	double c = inverseRay.point.squaredNorm()-2*inverseRay.point(2)*inverseRay.point(2);
 
-	RayIntersection hit;
 	hit.material = material;
 	Point potentialPoint;
 
