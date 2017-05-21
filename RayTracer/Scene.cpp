@@ -58,7 +58,15 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 		return backgroundColour;
 	}
 
+	Vector n = hitPoint.normal / hitPoint.normal.norm();
+	Vector v = -viewRay.direction;
+	v /= v.norm();
+
 	Colour hitColour = ambientLight * hitPoint.material.ambientColour;
+	Colour materialColour = Colour(0, 0, 0);
+
+	/* For each light, find it's contribution to the hit point's colour and
+	add it to material colour. */
 	for (auto light: lights_) {
 		double intensity = light->getIntensityAt(hitPoint.point);
 
@@ -74,32 +82,29 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 		/* Calculate diffuse component. */
 		Vector l = light->location - hitPoint.point;
 		l /= l.norm();
-		Vector n = hitPoint.normal / hitPoint.normal.norm();
 		double nl = n.dot(l);
 		Colour diffuseColour = hitPoint.material.diffuseColour * nl;
 
 		/* Calculate specular component. */
-		Vector v = -viewRay.direction;
-		v /= v.norm();
 		Vector r = (2 * n * l.dot(n)) - l;
 		r /= r.norm();
 		double rDotVToTheN = std::pow(r.dot(v), hitPoint.material.specularExponent);
 		Colour specularColour = hitPoint.material.specularColour * rDotVToTheN;
 
-		/* Sum specular and diffuse, assume same intensity. */
-		Colour materialColour = intensity * light->colour * (diffuseColour + specularColour);
+		/* Sum specular and diffuse, assume same intensity for each. */
+		materialColour += intensity * light->colour * (diffuseColour + specularColour);
 		// materialColour.clip();
-
-		/* Reflection */
-		Colour white = Colour(1, 1, 1);
-		Ray reflectedRay;
-		reflectedRay.point = hitPoint.point;
-		reflectedRay.direction = 2 * n * v.dot(n) - v;
-		reflectedRay.direction /= reflectedRay.direction.norm();
-		Colour reflectedColour = computeColour(reflectedRay, rayDepth - 1);
-		hitColour += hitPoint.material.mirrorColour * reflectedColour;
-		hitColour += (white - hitPoint.material.mirrorColour) * materialColour;
 	}
+
+	/* Reflection */
+	Colour white = Colour(1, 1, 1);
+	Ray reflectedRay;
+	reflectedRay.point = hitPoint.point;
+	reflectedRay.direction = 2 * n * v.dot(n) - v;
+	reflectedRay.direction /= reflectedRay.direction.norm();
+	Colour reflectedColour = computeColour(reflectedRay, rayDepth - 1);
+	hitColour += hitPoint.material.mirrorColour * reflectedColour;
+	hitColour += (white - hitPoint.material.mirrorColour) * materialColour;
 
 	hitColour.clip();
 	return hitColour;

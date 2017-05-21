@@ -26,7 +26,7 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 
 	Ray inverseRay = transform.applyInverse(ray);
 
-	Ray rayXY = inverseRay; // Ray in the X Y plane, z component is 0.
+	Ray rayXY = inverseRay; // Untransformed ray in the X Y plane, z component is 0.
 	rayXY.direction(2) = 0;
 	rayXY.point(2) = 0;
 
@@ -68,14 +68,15 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 	double c = rayXY.point.squaredNorm() - 1;
 
 	hit.material = material;
-	Point potentialPoint;
 
 	double b2_4ac = b*b - 4*a*c;
+	Point potentialPoint;
 	double d;
 	switch (sign(b2_4ac)) {
 		case -1:
 		// No intersections
 		break;
+
 		case 0:
 		// One intersection
 		d = -b/(2*a);
@@ -84,6 +85,7 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 			// Check the potential hit is in the range we want
 			hit.point = transform.apply(potentialPoint);
 
+			/* Calculate normal */
 			Normal normal = Normal(potentialPoint - Point(0, 0, potentialPoint(2)));
 			normal /= normal.norm();
 			hit.normal = transform.apply(normal);
@@ -95,6 +97,7 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 			result.push_back(hit);
 		}
 		break;
+
 		case 1:
 		// Two intersections
 		d = (-b + sqrt(b*b - 4*a*c))/(2*a);
@@ -103,6 +106,7 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 			// Check the potential hit is in the range we want
 			hit.point = transform.apply(potentialPoint);
 
+			/* Calculate normal */
 			Normal normal = Normal(potentialPoint - Point(0, 0, potentialPoint(2)));
 			normal /= normal.norm();
 			hit.normal = transform.apply(normal);
@@ -117,9 +121,10 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 		d = (-b - sqrt(b*b - 4*a*c))/(2*a);
 		potentialPoint = Point(inverseRay.point + d*inverseRay.direction);
 		if (d > 0 && potentialPoint(2) < 1 && potentialPoint(2) > -1) {
-			// Intersection is in front of the ray's start point
+			// Check the potential hit is in the range we want
 			hit.point = transform.apply(potentialPoint);
 
+			/* Calculate normal */
 			Normal normal = Normal(potentialPoint - Point(0, 0, potentialPoint(2)));
 			normal /= normal.norm();
 			hit.normal = transform.apply(normal);
@@ -130,8 +135,8 @@ std::vector<RayIntersection> Cylinder::intersect(const Ray& ray) const {
 			hit.distance = (hit.point - ray.point).norm() * sign(d);
 			result.push_back(hit);
 		}
-
 		break;
+
 		default:
 		// Shouldn't be possible, but just in case
 		std::cerr << "Something's wrong - sign(x) should be -1, +1 or 0" << std::endl;
