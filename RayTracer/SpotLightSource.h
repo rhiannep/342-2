@@ -7,7 +7,7 @@
 #include "Direction.h"
 
 /**
- * \file 
+ * \file
  * \brief SpotLightSource class header file.
  */
 
@@ -18,11 +18,11 @@
  * but which only illuminates in a cone.
  * The amount of light that reaches any given part of the scene should follow
  * a \f$1/r^2\f$ law, so more distant Objects receive less illumination, much like PointLightSource.
- * However, a SpotLightSource also has a Direction, and an angle property. 
+ * However, a SpotLightSource also has a Direction, and an angle property.
  * Only objects that are within the specified angle of the SpotLightSource's Direction should be illuminated.
  *
  * This creates the effect of a cone of light, as shown in the illustration below. A SpotLightSource
- * at some location, \b p, illuminates a cone around the direction, \b d. Only the parts of an object 
+ * at some location, \b p, illuminates a cone around the direction, \b d. Only the parts of an object
  * within some angle \f$\theta\f$ of that direction are illuminated. There is no illumination from
  * the SpotLightSource outside of the cone (black shading in the illustration). Note that within the
  * cone parts of an Object can still be shadowed (grey shading) like any other LightSource.
@@ -34,32 +34,32 @@ class SpotLightSource : public LightSource {
 
 public:
 
-	/** \brief SpotLightSource default constructor. 
+	/** \brief SpotLightSource default constructor.
 	 *
 	 * This creates a white light source at the origin that has intensity 1 at distance 1.
 	 * The light source points along the Z-axis, and has an angle of 45 degrees.
 	 **/
 	SpotLightSource();
 
-	/** \brief SpotLightSource constructor. 
+	/** \brief SpotLightSource constructor.
 	 *
 	 * This creates a white light source at the origin that has intensity 1 at distance 1.
 	 * The Direction and angle of the SpotLightSource are specified as parameters.
-	 * 
+	 *
 	 * \param d The Direction of the SpotLightSource.
 	 * \param a The angle of the SpotLightSource
 	 **/
 	SpotLightSource(Direction d, double a);
 
-	/** \brief SpotLightSource copy constructor. 
+	/** \brief SpotLightSource copy constructor.
 	 *
 	 * \param lightSource The SpotLightSource to copy to \c this.
 	 **/
 	SpotLightSource(const SpotLightSource& lightSource);
-	
+
 	/** \brief PointLightSource destructor */
 	~SpotLightSource();
-	
+
 	/** \brief SpotLightSource assignment operator.
 	 *
 	 * \param lightSource The SpotLightSource to copy to \c this.

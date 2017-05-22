@@ -269,6 +269,8 @@ SpotLightSource.h
 /home/cshome/r/rprice/342/342-2/RayTracer/SpotLightSource.h
 utility.h
 /home/cshome/r/rprice/342/342-2/RayTracer/utility.h
+math.h
+-
 
 /home/cshome/r/rprice/342/342-2/RayTracer/SpotLightSource.h
 LightSource.h
