@@ -26,7 +26,7 @@ End
 
 Object Sphere
     colour 0 0.7 0
-    specular 0.7 0.7 0.7 5
+    specular 0.7 0.7 0.7 2
     translate 0 -2 -5
 End
 
@@ -47,5 +47,5 @@ end
 
 light pointlight
     location -7 -10 -7 # back and up
-    colour 40 40 40
+    colour 30 30 30
 end

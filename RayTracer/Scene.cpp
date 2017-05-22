@@ -62,7 +62,6 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 	Vector v = -viewRay.direction;
 	v /= v.norm();
 
-	Colour hitColour = ambientLight * hitPoint.material.ambientColour;
 	Colour materialColour = Colour(0, 0, 0);
 
 	/* For each light, find it's contribution to the hit point's colour and
@@ -88,23 +87,28 @@ Colour Scene::computeColour(const Ray& viewRay, unsigned int rayDepth) const {
 		/* Calculate specular component. */
 		Vector r = (2 * n * l.dot(n)) - l;
 		r /= r.norm();
-		double rDotVToTheN = std::pow(r.dot(v), hitPoint.material.specularExponent);
+		double rDotVToTheN = pow(r.dot(v), hitPoint.material.specularExponent);
 		Colour specularColour = hitPoint.material.specularColour * rDotVToTheN;
 
 		/* Sum specular and diffuse, assume same intensity for each. */
 		materialColour += intensity * light->colour * (diffuseColour + specularColour);
-		// materialColour.clip();
 	}
+
+	materialColour.clip();
+	materialColour += ambientLight * hitPoint.material.ambientColour;
 
 	/* Reflection */
 	Colour white = Colour(1, 1, 1);
 	Ray reflectedRay;
 	reflectedRay.point = hitPoint.point;
-	reflectedRay.direction = 2 * n * v.dot(n) - v;
+	reflectedRay.direction = (2 * n * v.dot(n)) - v;
 	reflectedRay.direction /= reflectedRay.direction.norm();
 	Colour reflectedColour = computeColour(reflectedRay, rayDepth - 1);
-	hitColour += hitPoint.material.mirrorColour * reflectedColour;
-	hitColour += (white - hitPoint.material.mirrorColour) * materialColour;
+
+	/* Final hit colour is the ambient light level plus part of the material
+	   colour and part of the reflected colour. */
+	Colour hitColour = hitPoint.material.mirrorColour * reflectedColour
+	                   + (white - hitPoint.material.mirrorColour) * materialColour;
 
 	hitColour.clip();
 	return hitColour;

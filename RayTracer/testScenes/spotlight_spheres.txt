@@ -1,0 +1,29 @@
+Scene
+    ambientLight 0.3 0.3 0.3
+    backgroundColour 0.3 0.3 0.3
+    renderSize 400 300
+    RayDepth 2
+    filename spotlight.png
+End
+
+Material grey
+    Colour 0.2 0.2 0.2
+end
+
+Object Cylinder
+    Material grey
+    scale3 10 10 1
+    translate 0 -5 0
+    rotate x 90
+End
+
+
+camera pinholecamera 1
+    translate 0 -2 -10
+end
+
+
+light spotlight 0 1 0 15
+    location 0 -4 -5 # back and up
+    colour 40 40 40
+end

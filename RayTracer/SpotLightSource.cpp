@@ -30,9 +30,13 @@ const SpotLightSource& SpotLightSource::operator=(const SpotLightSource& lightSo
 }
 
 double SpotLightSource::getIntensityAt(const Point& point) const {
-	Vector l = location - point;
+	Vector l = point - location;
+	Vector d = direction / direction.norm();
 	double distance = l.norm();
+
 	if (distance < epsilon) distance = epsilon;
 	double intensity = 1 / (distance*distance);
-	return l.dot(direction) < cos(angle) ? intensity : 0;
+
+	l /= l.norm();
+	return acos(l.dot(direction)) < angle * (3.14159265 / 180.0) ? intensity : 0;
 }

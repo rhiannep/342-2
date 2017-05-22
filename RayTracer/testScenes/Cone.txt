@@ -1,12 +1,12 @@
 Scene
-    ambientLight 0.2 0.2 0.2
+    ambientLight 0.5 0.5 0.5
     backgroundColour 0.75 1.0 1.0
     renderSize 400 300
 End
 
 Material ShinyRed
     Colour 0.7 0 0
-    specular 0.8 0.8 0.8 3
+    specular 0.8 0.8 0.8 1.5
 end
 
 Object Cone

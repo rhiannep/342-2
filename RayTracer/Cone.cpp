@@ -61,7 +61,7 @@ std::vector<RayIntersection> Cone::intersect(const Ray& ray) const {
 		break;
 		case 0:
 		// One intersection
-		d = -b/(2*a);
+		d = -b / (2 * a);
 		potentialPoint = Point(inverseRay.point + d*inverseRay.direction);
 		if (d > 0 && potentialPoint(2) < 1 && potentialPoint(2) > 0) {
 			hit.point = transform.apply(potentialPoint);
